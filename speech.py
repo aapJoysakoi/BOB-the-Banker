@@ -1,4 +1,3 @@
-import openai
 import os
 from azure import cognitiveservices
 
