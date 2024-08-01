@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .chat-window {
+            background-color: #ffffff;
+            border: 1px solid #CCC;
+            border-radius: 10px;
+            height: 60vh;
+            margin-bottom: 10px;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-bubble {
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 1em;
+            max-width: 70%;
+            word-wrap: break-word;
+            border: 1px solid #CCC;
+            margin-bottom: 10px;
+        }
+        .chat-bubble.user {
+            background-color: #DCF8C6;
+            align-self: flex-end;
+        }
+        .chat-bubble.bot {
+            background-color: #E1F3FB;
+            align-self: flex-start;
+        }
+        .chat-input {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            background-color: #fff;
+            border-top: 1px solid #CCC;
+        }
+        .chat-input button {
+            background-color: #075E54;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #CCC;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="custom-title">Chatbot</h1>
+        <div id="chat-window" class="chat-window"></div>
+        <div class="chat-input">
+            <input type="text" id="message" placeholder="Type your message here...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    <script>
+        function addMessage(sender, message) {
+            const chatWindow = document.getElementById('chat-window');
+            const chatBubble = document.createElement('div');
+            chatBubble.className = 'chat-bubble ' + sender;
+            chatBubble.textContent = message;
+            chatWindow.appendChild(chatBubble);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function sendMessage() {
+            const messageInput = document.getElementById('message');
+            const userMessage = messageInput.value;
+            if (userMessage.trim() === '') return;
+
+            addMessage('user', userMessage);
+            messageInput.value = '';
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    'message': userMessage
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                addMessage('bot', data.message);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
