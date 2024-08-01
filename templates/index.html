@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot</title>
+    <title>BoB The Banker</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
+            background-color: #ffffff;
             margin: 0;
             padding: 0;
         }
@@ -17,8 +17,8 @@
             padding: 20px;
         }
         .chat-window {
-            background-color: #ffffff;
-            border: 1px solid #CCC;
+            background-color: #f8f9fa;
+            border: 1px solid #F86E22;
             border-radius: 10px;
             height: 60vh;
             margin-bottom: 10px;
@@ -33,15 +33,15 @@
             font-size: 1em;
             max-width: 70%;
             word-wrap: break-word;
-            border: 1px solid #CCC;
+            border: 1px solid #F86E22;
             margin-bottom: 10px;
         }
         .chat-bubble.user {
-            background-color: #DCF8C6;
+            background-color: #FFD580;
             align-self: flex-end;
         }
         .chat-bubble.bot {
-            background-color: #E1F3FB;
+            background-color: #FFEBCC;
             align-self: flex-start;
         }
         .chat-input {
@@ -49,10 +49,10 @@
             gap: 10px;
             padding: 10px;
             background-color: #fff;
-            border-top: 1px solid #CCC;
+            border-top: 1px solid #F86E22;
         }
         .chat-input button {
-            background-color: #075E54;
+            background-color: #F86E22;
             color: white;
             border: none;
             padding: 10px;
@@ -64,18 +64,28 @@
             flex: 1;
             padding: 10px;
             font-size: 1em;
-            border: 1px solid #CCC;
+            border: 1px solid #F86E22;
             border-radius: 5px;
+        }
+        .chat-input .mic-button {
+            background-color: #F86E22;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 50%;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="custom-title">Chatbot</h1>
+        <h1 class="custom-title">BoB The Banker</h1>
         <div id="chat-window" class="chat-window"></div>
         <div class="chat-input">
-            <input type="text" id="message" placeholder="Type your message here...">
+            <input type="text" id="message" placeholder="Type your message here..." onkeypress="handleKeyPress(event)">
             <button onclick="sendMessage()">Send</button>
+            <button class="mic-button" onclick="startListening()">🎤</button>
         </div>
     </div>
     <script>
@@ -108,6 +118,39 @@
             .then(response => response.json())
             .then(data => {
                 addMessage('bot', data.message);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function startListening() {
+            fetch('/listen', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    addMessage('user', data.message);
+                    fetch('/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: new URLSearchParams({
+                            'message': data.message
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(chatData => {
+                        addMessage('bot', chatData.message);
+                    })
+                    .catch(error => console.error('Error:', error));
+                }
             })
             .catch(error => console.error('Error:', error));
         }
