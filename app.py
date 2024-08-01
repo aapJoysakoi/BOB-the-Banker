@@ -2,6 +2,23 @@ import streamlit as st
 import azure.cognitiveservices.speech as speechsdk
 import openai
 
+# Custom CSS
+custom_css = """
+    <style>
+        .custom-title {
+            color: #4CAF50;
+            font-size: 2em;
+            text-align: center;
+        }
+        .custom-text {
+            color: #333;
+            font-size: 1.2em;
+            text-align: justify;
+        }
+    </style>
+"""
+
+
 # Azure Speech API and OpenAI API credentials
 AZURE_SPEECH_KEY = "5b33a97d32f745e09cc5b955e4f1120e"
 AZURE_SPEECH_REGION = "southeastasia"
